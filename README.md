@@ -1,8 +1,6 @@
 # 🏢 Company Intelligence Agent
 
-> An AI-powered research agent that generates structured business 
-> intelligence reports for any company in seconds.
-> Built for the Unada Labs AI/ML Internship Assessment.
+Built an AI-powered business research platform that gathers real-time company information, analyzes it using LLMs, and generates structured intelligence reports. Implemented with Python, Streamlit, Tavily Search API, and Groq LLaMA 3.3 70B, including PDF export and interactive report visualization.
 
 ---
 
@@ -357,9 +355,3 @@ python -m src.agents.analyst
 | Documentation & Communication | 5% | This README + inline code comments + architecture diagram |
 
 ---
-
-## 👤 Built By
-
-**Zeel Kanudawala** — AI/ML Intern Candidate
-Submission for Unada Labs Assessment
-Deadline: 05 June 2026
