@@ -27,28 +27,23 @@ The agent:
 ---
 
 ## 🏗️ System Architecture
-User (Browser)
-│
-▼
-┌─────────────────────────────┐
-│     Streamlit Web App       │  ← app/streamlit_app.py
-│   (Input + Report Display)  │
-└──────────┬──────────────────┘
-│
-┌─────┴──────┐
-▼            ▼
-┌─────────┐  ┌──────────────┐
-│ Search  │  │  AI Analyst  │
-│  Tool   │  │   (Groq)     │
-│(Tavily) │  │              │
-└─────────┘  └──────────────┘
-│            │
-└─────┬──────┘
-      ▼
-┌─────────────────────────────┐
-│      Report Generator       │  ← Structured JSON dict
-│   + PDF/TXT Export          │
-└─────────────────────────────┘
+
+```mermaid
+flowchart TD
+    A[User Input - Company Name] --> B[Streamlit Web App]
+
+    B --> C[Tavily Search API]
+    C --> D[Research Data Collection]
+
+    D --> E[Groq LLaMA 3.3 70B]
+    E --> F[Business Intelligence Analysis]
+
+    F --> G[Structured JSON Report]
+
+    G --> H[Interactive Dashboard]
+    G --> I[PDF Export]
+    G --> J[TXT Export]
+```
 
 **Data Flow:**
 1. User types company name → Streamlit captures input
@@ -60,135 +55,35 @@ User (Browser)
 7. `pdf_export.py` converts report to downloadable PDF
 
 --- 
-Architecture Overview
-┌─────────────────────────────────────────────┐
-│                 USER INPUT                  │
-│        Company Name (e.g., Adani Realty)    │
-└─────────────────────┬───────────────────────┘
-│
-▼
-┌─────────────────────────────────────────────┐
-│              STREAMLIT FRONTEND             │
-│                                             │
-│  • User Interface                           │
-│  • Input Validation                         │
-│  • Report Display                           │
-│  • PDF Download                             │
-└─────────────────────┬───────────────────────┘
-│
-▼
-═══════════════════════════════════════════════
-RESEARCH LAYER
-═══════════════════════════════════════════════
+## 🔄 Architecture Overview
 
-┌─────────────────────────────────────────────┐
-│            RESEARCH AGENT                   │
-│                                             │
-│ Generates Multiple Search Queries:          │
-│                                             │
-│ 1. Company Overview                         │
-│ 2. Recent News & Developments               │
-│ 3. Expansion Plans & Challenges             │
-└─────────────────────┬───────────────────────┘
-│
-▼
-┌─────────────────────────────────────────────┐
-│               TAVILY SEARCH API             │
-│                                             │
-│ • Real-Time Web Search                      │
-│ • Latest News                               │
-│ • Market Intelligence                       │
-│ • Business Information                      │
-└─────────────────────┬───────────────────────┘
-│
-▼
-┌─────────────────────────────────────────────┐
-│          RAW RESEARCH DATA                  │
-│                                             │
-│ • Search Results                            │
-│ • Company Information                       │
-│ • Industry Insights                         │
-│ • Recent Developments                       │
-└─────────────────────┬───────────────────────┘
-│
-▼
-═══════════════════════════════════════════════
-ANALYSIS LAYER
-═══════════════════════════════════════════════
+```mermaid
+flowchart LR
 
-┌─────────────────────────────────────────────┐
-│            PROMPT ENGINEERING               │
-│                                             │
-│ Structured Business Intelligence Prompt     │
-│                                             │
-│ • Company Overview                          │
-│ • Key Business Information                  │
-│ • Business Challenges                       │
-│ • AI Opportunities                          │
-│ • Personalized CEO Pitch                    │
-└─────────────────────┬───────────────────────┘
-│
-▼
-┌─────────────────────────────────────────────┐
-│             GROQ + LLAMA 3.3 70B            │
-│                                             │
-│ Business Reasoning Engine                   │
-│                                             │
-│ • Context Understanding                     │
-│ • Challenge Identification                  │
-│ • AI Opportunity Discovery                  │
-│ • Strategic Recommendation                  │
-└─────────────────────┬───────────────────────┘
-│
-▼
-┌─────────────────────────────────────────────┐
-│          STRUCTURED JSON REPORT             │
-│                                             │
-│ {                                           │
-│   overview,                                │
-│   business_info,                           │
-│   challenges,                              │
-│   ai_opportunities,                        │
-│   pitch                                    │
-│ }                                           │
-└─────────────────────┬───────────────────────┘
-│
-▼
-═══════════════════════════════════════════════
-PRESENTATION LAYER
-═══════════════════════════════════════════════
+    subgraph Research Layer
+        A[Company Name]
+        B[Tavily Search]
+        C[Research Data]
+        A --> B --> C
+    end
 
-┌─────────────────────────────────────────────┐
-│             REPORT VISUALIZER               │
-│                                             │
-│ • Styled Report Sections                    │
-│ • Interactive UI                            │
-│ • Business-Friendly Layout                  │
-└─────────────────────┬───────────────────────┘
-│
-▼
-┌─────────────────────────────────────────────┐
-│              PDF GENERATOR                  │
-│                                             │
-│ • Downloadable Intelligence Report          │
-│ • Professional Format                       │
-└─────────────────────┬───────────────────────┘
-│
-▼
-┌─────────────────────────────────────────────┐
-│              FINAL OUTPUT                   │
-│                                             │
-│ AI-Powered Company Intelligence Report      │
-│                                             │
-│ ✓ Company Overview                          │
-│ ✓ Business Insights                         │
-│ ✓ Key Challenges                            │
-│ ✓ AI Opportunities                          │
-│ ✓ Personalized CEO Pitch                    │
-│ ✓ PDF Export                                │
-└─────────────────────────────────────────────┘
+    subgraph Analysis Layer
+        D[Prompt Engineering]
+        E[Groq LLaMA 3.3 70B]
+        F[Structured Report]
+        C --> D --> E --> F
+    end
 
----
+    subgraph Presentation Layer
+        G[Streamlit Dashboard]
+        H[PDF Export]
+        I[TXT Export]
+
+        F --> G
+        F --> H
+        F --> I
+    end
+```
 
 ## ⚡ Quick Start
 
@@ -249,31 +144,35 @@ Open your browser at `http://localhost:8501`
 
 ## 📁 Project Structure
 
-unada-research-agent/
-│
-├── src/                          # Core application logic
-│   ├── agents/
-│   │   └── analyst.py            # Groq LLM integration + report generation
-│   ├── tools/
-│   │   ├── search_tool.py        # Tavily web search integration
-│   │   └── pdf_export.py         # PDF report generation
-│   └── prompts/
-│       └── report_prompts.py     # All LLM prompts (centralized)
+```text
+company-intelligence-agent/
 │
 ├── app/
-│   └── streamlit_app.py          # Web interface (main entry point)
+│   └── streamlit_app.py
 │
-├── outputs/                      # Generated reports saved here
+├── src/
+│   ├── agents/
+│   │   └── analyst.py
+│   │
+│   ├── tools/
+│   │   ├── search_tool.py
+│   │   └── pdf_export.py
+│   │
+│   └── prompts/
+│       └── report_prompts.py
 │
-├── docs/                         # Architecture diagrams, screenshots
+├── outputs/
+│   └── generated_reports/
 │
-├── .env.example                  # Template for API keys
-├── .gitignore                    # Excludes .env, venv, outputs
-├── requirements.txt              # All dependencies with versions
-└── README.md                     # This file
-
----
-
+├── docs/
+│   ├── architecture.png
+│   └── screenshots/
+│
+├── .env.example
+├── requirements.txt
+├── README.md
+└── .gitignore
+```
 ## 🧠 Technical Decisions & Reasoning
 
 ### Why Groq + LLaMA 3.3 70B instead of GPT-4?
